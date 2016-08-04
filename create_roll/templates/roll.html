@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block header_text %}Your Current Roster{% endblock %}
+
+{% block form_action %}{% url 'view_create_roll'  roll.id %}{% endblock %}
+
+{% block table %}
+    <table id="id_roll_table" class="table">
+        {% for attendee in roll.item_set.all %}
+            <tr><td>{{ forloop.counter }}: {{ attendee.text }}</td></tr>
+        {% endfor %}
+    </table>
+{% endblock %}
