@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from create_roll.models import Attendee, Roll
 
 
-class ModelTest(TestCase):
+class AttendeeModelTest(TestCase):
 
     def test_default_text(self):
         attendee = Attendee()
