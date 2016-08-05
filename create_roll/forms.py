@@ -35,7 +35,7 @@ class ExistingRollAttendeeForm(AttendeeForm):
         try:
             self.instance.validate_unique()
         except ValidationError as e:
-            e.error_dict = {'text': [DUPLICATE_ATTENDEE_ERROR]}
+            e.error_dict = {'name': [DUPLICATE_ATTENDEE_ERROR]}
             self._update_errors(e)
 
     def save(self):

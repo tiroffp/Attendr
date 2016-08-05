@@ -6,8 +6,8 @@
 
 {% block table %}
     <table id="id_roll_table" class="table">
-        {% for attendee in roll.item_set.all %}
-            <tr><td>{{ forloop.counter }}: {{ attendee.text }}</td></tr>
+        {% for attendee in roll.attendee_set.all %}
+            <tr><td>{{ forloop.counter }}: {{ attendee.name}}</td></tr>
         {% endfor %}
     </table>
 {% endblock %}

@@ -22,5 +22,5 @@ from create_roll import urls as create_roll_urls
 urlpatterns = [
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^$', create_roll_views.home_page, name='home'),
-    url(r'^rolls/', include(create_roll_urls)),
+    url(r'^create_roll/', include(create_roll_urls)),
 ]
