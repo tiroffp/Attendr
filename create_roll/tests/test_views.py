@@ -111,6 +111,23 @@ class RollViewTest(TestCase):
         self.assertIsInstance(response.context['form'], ExistingRollAttendeeForm)
         self.assertContains(response, 'name="name"')
 
+    def test_displays_attendees_in_order(self):
+        roll = Roll.objects.create()
+        self.client.post(
+            '/create_roll/%d/' % (roll.id,),
+            data={'name': 'Mister First'}
+        )
+        response = self.client.post(
+            '/create_roll/%d/' % (roll.id,),
+            data={'name': 'Mister Second'}
+        )
+        response = self.client.get(
+            '/create_roll/%d/' % (roll.id,),
+        )
+        first_attendee, second_attendee = response.context['attendees']
+        self.assertEqual(first_attendee.name, 'Mister First')
+        self.assertEqual(second_attendee.name, 'Mister Second')
+
 
 class NewRollTest(TestCase):
     def test_saving_a_POST_request(self):

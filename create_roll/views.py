@@ -15,7 +15,10 @@ def view_roll(request, roll_id):
         if form.is_valid():
             form.save()
             return redirect(roll)
-    return render(request, 'roll.html', {'roll': roll, 'form': form})
+    attendees = roll.attendee_set.order_by('id')
+    return render(request,
+                  'roll.html',
+                  {'roll': roll, 'attendees': attendees, 'form': form})
 
 
 def new_roll(request):

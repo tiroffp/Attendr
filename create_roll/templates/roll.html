@@ -6,7 +6,7 @@
 
 {% block table %}
     <table id="id_roll_table" class="table">
-        {% for attendee in roll.attendee_set.all %}
+        {% for attendee in attendees %}
             <tr><td>{{ forloop.counter }}: {{ attendee.name}}</td></tr>
         {% endfor %}
     </table>
