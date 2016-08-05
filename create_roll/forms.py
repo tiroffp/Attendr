@@ -18,7 +18,7 @@ class AttendeeForm(forms.models.ModelForm):
                         }),
                 }
                 error_messages = {
-                    'names': {'required': EMPTY_ERROR_MESSAGE}
+                    'name': {'required': EMPTY_ERROR_MESSAGE}
                 }
 
         def save(self, for_roll):

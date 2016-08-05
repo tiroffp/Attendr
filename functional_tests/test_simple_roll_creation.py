@@ -13,9 +13,9 @@ class NewVisitorTest(FunctionalTest):
 
         # She notices that the title mentions to-do create_roll, so she
         # knows shes on the right site
-        self.assertIn('To-Do', self.browser.title)
+        self.assertIn('Attendr', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
-        self.assertIn("To-Do", header_text)
+        self.assertIn("Roll", header_text)
 
         # She is invited to make a roll right away
         inputbox = self.get_attendee_input_box()

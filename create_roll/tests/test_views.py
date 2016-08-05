@@ -92,57 +92,55 @@ class RollViewTest(TestCase):
         expected_error = escape(EMPTY_ERROR_MESSAGE)
         self.assertContains(response, expected_error)
 
-    # def test_duplicate_attendee_validation_errors_end_up_on_create_roll_page(self):
-    #         roll1 = Roll.objects.create()
-    #         Attendee.objects.create(roll=roll1, name='nameey')
-    #         response = self.client.post(
-    #             '/create_roll/%d/' % (roll1.id,),
-    #             data={'name': 'nameey'}
-    #         )
+    def test_duplicate_attendee_validation_errors_end_up_on_create_roll_page(self):
+        roll1 = Roll.objects.create()
+        Attendee.objects.create(roll=roll1, name='nameey')
+        response = self.client.post(
+            '/create_roll/%d/' % (roll1.id,),
+            data={'name': 'nameey'}
+        )
 
-    #         expected_error = escape(DUPLICATE_ATTENDEE_ERROR)
-            # self.assertContains(response, expected_error)
-            # self.assertTemplateUsed(response, 'roll.html')
-            # self.assertEqual(Attendee.objects.all().count(), 1)
+        expected_error = escape(DUPLICATE_ATTENDEE_ERROR)
+        self.assertContains(response, expected_error)
+        self.assertTemplateUsed(response, 'roll.html')
+        self.assertEqual(Attendee.objects.all().count(), 1)
+
+    def test_displays_attendee_form(self):
+        roll_ = Roll.objects.create()
+        response = self.client.get('/create_roll/%d/' % (roll_.id,))
+        self.assertIsInstance(response.context['form'], ExistingRollAttendeeForm)
+        self.assertContains(response, 'name="name"')
 
 
-# def test_displays_attendee_form(self):
-#         roll_ = Roll.objects.create()
-#         response = self.client.get('/create_roll/%d/' % (roll_.id,))
-#         self.assertIsInstance(response.context['form'], ExistingRollAttendeeForm)
-#         self.assertContains(response, 'name="name"')
+class NewRollTest(TestCase):
+    def test_saving_a_POST_request(self):
+        self.client.post('/create_roll/new',
+                         data={'name': 'A new roll attendee'})
+        self.assertEqual(Attendee.objects.count(), 1)
+        new_attendee = Attendee.objects.first()
+        self.assertEqual(new_attendee.name, 'A new roll attendee')
 
+    def test_redirects_after_POST(self):
+        response = self.client.post('/create_roll/new',
+                                    data={'name': 'A new roll attendee'})
+        new_roll = Roll.objects.first()
+        self.assertRedirects(response, '/create_roll/%d/' % (new_roll.id,))
 
-# class NewRollTest(TestCase):
-#     def test_saving_a_POST_request(self):
-#         self.client.post('/create_roll/new',
-#                          data={'name': 'A new roll attendee'})
-#         self.assertEqual(Attendee.objects.count(), 1)
-#         new_attendee = Attendee.objects.first()
-#         self.assertEqual(new_attendee.name, 'A new roll attendee')
+    def test_for_invalid_input_renders_home_template(self):
+        response = self.client.post('/create_roll/new', data={'name': ''})
+        self.assertEqual(response.status_code, 200)
+        self. assertTemplateUsed(response, 'home.html')
 
-#     def test_redirects_after_POST(self):
-#         print(1)
-#         response = self.client.post('/create_roll/new',
-#                                     data={'name': 'A new roll attendee'})
-#         new_roll = Roll.objects.first()
-#         self.assertRedirects(response, '/create_roll/%d/' % (new_roll.id,))
+    def test_validation_errors_are_shown_on_home_page(self):
+        response = self.client.post('/create_roll/new', data={'name': ''})
+        expected_error = escape(EMPTY_ERROR_MESSAGE)
+        self.assertContains(response, expected_error)
 
-#     def test_for_invalid_input_renders_home_template(self):
-#         response = self.client.post('/create_roll/new', data={'name': ''})
-#         self.assertEqual(response.status_code, 200)
-#         self. assertTemplateUsed(response, 'home.html')
+    def test_for_invalid_input_passes_form_to_template(self):
+        response = self.client.post('/create_roll/new', data={'name': ''})
+        self.assertIsInstance(response.context['form'], AttendeeForm)
 
-#     def test_validation_errors_are_shown_on_home_page(self):
-#         response = self.client.post('/create_roll/new', data={'name': ''})
-#         expected_error = escape(EMPTY_ERROR_MESSAGE)
-#         self.assertContains(response, expected_error)
-
-#     def test_for_invalid_input_passes_form_to_template(self):
-#         response = self.client.post('/create_roll/new', data={'name': ''})
-#         self.assertIsInstance(response.context['form'], AttendeeForm)
-
-#     def test_invalid_roll_attendees_arent_saved(self):
-#         self.client.post('create_roll/new', data={'name': ''})
-#         self.assertEquals(Roll.objects.count(), 0)
-#         self.assertEquals(Attendee.objects.count(), 0)
+    def test_invalid_roll_attendees_arent_saved(self):
+        self.client.post('create_roll/new', data={'name': ''})
+        self.assertEquals(Roll.objects.count(), 0)
+        self.assertEquals(Attendee.objects.count(), 0)
