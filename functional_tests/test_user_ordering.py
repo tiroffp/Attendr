@@ -12,7 +12,7 @@ class UserOrderingTest(FunctionalTest):
         rows = table.find_elements_by_tag_name('tr')
         ziplist = zip(rows, expected_order)
         for actual, expected in ziplist:
-            self.assertIn(actual.text, expected)
+            self.assertIn(expected, actual.text)
 
     def test_can_reorder_roll(self):
         # John is making a roll, but wants to order it by who he likes best

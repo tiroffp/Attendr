@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 from functional_tests.base import FunctionalTest
 
 
@@ -49,6 +50,7 @@ class NewVisitorTest(FunctionalTest):
         # # of Mary's is coming through cookies, etc
         self.browser.refresh()
         self.browser.quit()
+        WebDriverWait(self.browser, 10)
         self.browser = webdriver.Firefox()
 
         # Frank visits the home page. There is no sign of Mary's roll
@@ -57,7 +59,8 @@ class NewVisitorTest(FunctionalTest):
         self.assertNotIn('Mary Man', page_text)
         self.assertNotIn('David Dad', page_text)
 
-        # Frank starts a new roll by entering a new attendee.
+        # Frank starts a new roll by entering a new attendee
+        inputbox = self.get_attendee_input_box()
         inputbox.send_keys('Frank Furt')
         inputbox.send_keys(Keys.ENTER)
 
@@ -69,6 +72,6 @@ class NewVisitorTest(FunctionalTest):
         # Again, there is no trace of Mary's roll
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Mary Man', page_text)
-        self.assertIn('Buy pork chops', page_text)
+        self.assertIn('Frank Furt', page_text)
 
         # Satisified, he leaves the page
