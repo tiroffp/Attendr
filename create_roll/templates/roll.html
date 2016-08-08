@@ -7,7 +7,10 @@
 {% block table %}
     <table id="id_roll_table" class="table">
         {% for attendee in attendees %}
-            <tr><td>{{ forloop.counter }}: {{ attendee.name}}</td></tr>
+            <tr>
+              <td>{{ forloop.counter }}: {{ attendee.name}}</td>
+              <td><button type="button" class="btn btn-primary btn-xs" id="edit_attendee_{{ attendee.id }}">Edit</button></td>
+            </tr>
         {% endfor %}
     </table>
 {% endblock %}
