@@ -161,3 +161,48 @@ class NewRollTest(TestCase):
         self.client.post('create_roll/new', data={'name': ''})
         self.assertEquals(Roll.objects.count(), 0)
         self.assertEquals(Attendee.objects.count(), 0)
+
+
+class EditRollTest(TestCase):
+    def test_POST_saves_edit_to_database(self):
+        roll = Roll.objects.create()
+        attendee = Attendee.objects.create(roll=roll, name='don juan')
+        self.client.post('/create_roll/%d/edit_%d/' % (roll.id, attendee.id),
+                         data={'name': 'don john', 'order': 5})
+        new_attendee = Attendee.objects.first()
+        self.assertEqual(attendee, new_attendee)
+        self.assertEqual(attendee.name, 'don john')
+        self.assertEqual(attendee.order, 5)
+
+    def test_redirects_to_view_roll_after_POST(self):
+        roll = Roll.objects.create()
+        attendee = Attendee.objects.create(roll=roll, name='Mister Pink')
+        response = self.client.post('/create_roll/%d/edit_%d/' % (roll.id, attendee.id),
+                                    data={'name': 'don john', 'order': 5})
+        self.assertRedirects(response, '/create_roll/%d/' % (roll.id))
+
+    def test_displays_other_attendees_during_edit(self):
+        correct_roll = Roll.objects.create()
+        edit = Attendee.objects.create(name='attendeey 1', roll=correct_roll)
+        Attendee.objects.create(name='attendeey 2', roll=correct_roll)
+        other_roll = Roll.objects.create()
+        Attendee.objects.create(name='other roll attendee 1', roll=other_roll)
+        Attendee.objects.create(name='other roll attendee 2', roll=other_roll)
+
+        response = self.client.get('/create_roll/%d/edit_%d/' % (correct_roll.id, edit.id))
+        self.assertContains(response, 'attendeey 1')
+        self.assertContains(response, 'attendeey 2')
+        self.assertNotContains(response, 'other roll attendee 1')
+        self.assertNotContains(response, 'other roll attendee 2')
+
+    def test_uses_edit_roll_template(self):
+        roll_ = Roll.objects.create()
+        attendee = Attendee.objects.create(roll=roll_, name='Mister Orange')
+        response = self.client.get('/create_roll/%d/edit_%d/' % (roll_.id, attendee.id))
+        self.assertTemplateUsed(response, 'edit_roll.html')
+
+    def test_passes_correct_roll_to_template(self):
+        correct_roll = Roll.objects.create()
+        attendee = Attendee.objects.create(roll=correct_roll, name='Mister Green')
+        response = self.client.get('/create_roll/%d/edit_%d/' % (correct_roll.id, attendee.id))
+        self.assertEqual(response.context['roll'], correct_roll)
