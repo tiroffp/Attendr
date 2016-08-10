@@ -1,0 +1,28 @@
+{% extends 'roll.html' %}
+
+{% block table %}
+  <table id="id_roll_table" class="table">
+    {% for attendee in attendees %}
+      <tr>
+        {% if attendee.id == edit_attendee_id %}
+          <form method="POST" action="{% url 'edit_create_roll' roll.id edit_attendee_id %}">
+            {% csrf_token %}
+            <td><p>{{ forloop.counter }}:</p></td>
+            <td>
+              <div class="input_div">
+                <input id="{{ edit_attendee_form.name.id }}" class="form-control" name="{{ edit_attendee_form.name.name }}" type="text" value="{{ edit_attendee_form.name.value}}"/>
+              </div>
+            </td>
+            <td>
+              <div class="input_div">
+                <input type="submit" class="btn btn-primary" id="edit_attendee_submit" value="Submit"/>
+              </div>
+            </td>
+          </form>
+        {% else %}
+          <td><p>{{ forloop.counter }}:</p></td><td><p>{{ attendee.name}}</p></td><td></td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

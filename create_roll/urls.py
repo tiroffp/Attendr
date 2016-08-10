@@ -19,4 +19,5 @@ from create_roll import views
 urlpatterns = [
     url(r'^new$', views.new_roll, name='new_create_roll'),
     url(r'^(\d+)/$', views.view_roll, name='view_create_roll'),
+    url(r'^(\d+)/edit_(\d+)/$', views.edit_roll, name='edit_create_roll'),
 ]

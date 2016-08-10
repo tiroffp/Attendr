@@ -5,7 +5,8 @@ from create_roll.forms import (
     AttendeeForm,
     EMPTY_ERROR_MESSAGE,
     DUPLICATE_ATTENDEE_ERROR,
-    ExistingRollAttendeeForm)
+    ExistingRollAttendeeForm,
+    EditAttendeeForm)
 
 
 class HomePageTest(TestCase):
@@ -168,17 +169,16 @@ class EditRollTest(TestCase):
         roll = Roll.objects.create()
         attendee = Attendee.objects.create(roll=roll, name='don juan')
         self.client.post('/create_roll/%d/edit_%d/' % (roll.id, attendee.id),
-                         data={'name': 'don john', 'order': 5})
+                         data={'name': 'don john'})
         new_attendee = Attendee.objects.first()
         self.assertEqual(attendee, new_attendee)
-        self.assertEqual(attendee.name, 'don john')
-        self.assertEqual(attendee.order, 5)
+        self.assertEqual(new_attendee.name, 'don john')
 
     def test_redirects_to_view_roll_after_POST(self):
         roll = Roll.objects.create()
         attendee = Attendee.objects.create(roll=roll, name='Mister Pink')
         response = self.client.post('/create_roll/%d/edit_%d/' % (roll.id, attendee.id),
-                                    data={'name': 'don john', 'order': 5})
+                                    data={'name': 'don john'})
         self.assertRedirects(response, '/create_roll/%d/' % (roll.id))
 
     def test_displays_other_attendees_during_edit(self):
@@ -206,3 +206,24 @@ class EditRollTest(TestCase):
         attendee = Attendee.objects.create(roll=correct_roll, name='Mister Green')
         response = self.client.get('/create_roll/%d/edit_%d/' % (correct_roll.id, attendee.id))
         self.assertEqual(response.context['roll'], correct_roll)
+
+    def test_still_has_new_attendee_input(self):
+        roll = Roll.objects.create()
+        attendee = Attendee.objects.create(roll=roll, name='Mister Red')
+        response = self.client.get('/create_roll/%d/edit_%d/' % (roll.id, attendee.id))
+        self.assertIsInstance(response.context['form'], ExistingRollAttendeeForm)
+
+    def test_correctly_defines_attendee_up_for_edit(self):
+        roll = Roll.objects.create()
+        Attendee.objects.create(roll=roll, name='Mister NoEdit')
+        correct_attendee = Attendee.objects.create(roll=roll, name='Mister Edit')
+        response = self.client.get('/create_roll/%d/edit_%d/' % (roll.id, correct_attendee.id))
+        self.assertEqual(response.context['edit_attendee_id'], correct_attendee.id)
+
+    def test_autopopulates_form_with_data(self):
+        roll = Roll.objects.create()
+        Attendee.objects.create(roll=roll, name='Mister NoEdit')
+        correct_attendee = Attendee.objects.create(roll=roll, name='Mister Edit')
+        response = self.client.get('/create_roll/%d/edit_%d/' % (roll.id, correct_attendee.id))
+        self.assertIsInstance(response.context['edit_attendee_form'], EditAttendeeForm)
+        self.assertContains(response, 'Mister Edit')
