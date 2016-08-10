@@ -2,7 +2,7 @@ from functional_tests.base import FunctionalTest
 from selenium import webdriver
 
 
-class UserOrderingTest(FunctionalTest):
+class EditingRollTest(FunctionalTest):
     def check_table_row_ordering(self, expected_order):
         """
             Asserts that the table contains the same rows as defined in
@@ -14,7 +14,7 @@ class UserOrderingTest(FunctionalTest):
         for actual, expected in ziplist:
             self.assertIn(expected, actual.text)
 
-    def test_can_reorder_roll(self):
+    def test_can_edit_attendees_already_on_roll(self):
         # John is making a roll, but wants to order it by who he likes best
         # John loads up the site
         self.browser.get(self.live_server_url)
@@ -24,8 +24,21 @@ class UserOrderingTest(FunctionalTest):
 
         # John adds two new people
         self.get_attendee_input_box().send_keys('Alexander Hamilton\n')
-        self.get_attendee_input_box().send_keys('Tony Soprano\n')
+        self.get_attendee_input_box().send_keys('Tony Tiger\n')
 
+        # John remembers that Tony Soprano, not Tony Tiger agreed to come to his
+        # meeting. He decides its easier to edit the Tiger's entry, rather than
+        # create a new one
+        self.browser.find_element_by_id('edit_attendee_2').click()
+        namebox = self.browser.find_element_by_id('id_edit_name')
+        namebox.clear()
+        namebox.send_keys('Tony Soprano\n')
+        self.check_for_row_in_roll_table('Tony Soprano')
+        try:
+            self.check_for_row_in_roll_table('Tony Tiger')  # should not find
+            self.assertFalse(True)
+        except AssertionError:
+            self.assertTrue(True)
         # John sees that the three attendees currently have order numbers
         # created based on their creation order
         expected_order = ['Daveed Diggs', 'Alexander Hamilton', 'Tony Soprano']
