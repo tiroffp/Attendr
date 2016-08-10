@@ -1,3 +1,17 @@
 #id_text{
     margin-top: 2ex;
 }
+#id_roll_table, tr, td{
+    height: 2ex;
+    cen
+}
+p{
+    text-align: center;
+    vertical-align: middle;
+    margin-top: 6px;
+}
+.input_div{
+    /*text-align: center;*/
+    vertical-align: middle;
+    margin:auto 0;
+}
