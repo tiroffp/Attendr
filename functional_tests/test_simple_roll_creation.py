@@ -32,7 +32,7 @@ class NewVisitorTest(FunctionalTest):
         inputbox.send_keys(Keys.ENTER)
         mary_roll_url = self.browser.current_url
         self.assertRegex(mary_roll_url, '/create_roll/.+')
-        self.check_for_row_in_roll_table('1: Mary Man')
+        self.check_for_row_in_roll_table('Mary Man')
 
         # There is still a textbox inviting here to enter another attendee
         # she enters "David Dad"
@@ -41,8 +41,8 @@ class NewVisitorTest(FunctionalTest):
         inputbox.send_keys(Keys.ENTER)
 
         # the page updates again, showing both her inputs
-        self.check_for_row_in_roll_table('1: Mary Man')
-        self.check_for_row_in_roll_table('2: David Dad')
+        self.check_for_row_in_roll_table('Mary Man')
+        self.check_for_row_in_roll_table('David Dad')
 
         # now a new user, Frank, comes along to the site
 

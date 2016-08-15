@@ -29,7 +29,7 @@ class EditingRollTest(FunctionalTest):
         # John remembers that Tony Soprano, not Tony Tiger agreed to come to his
         # meeting. He decides its easier to edit the Tiger's entry, rather than
         # create a new one
-        self.browser.find_element_by_id('edit_attendee_2').click()
+        self.browser.find_element_by_id('edit_attendee_3').click()
         namebox = self.browser.find_element_by_id('id_edit_name')
         namebox.clear()
         namebox.send_keys('Tony Soprano\n')
@@ -46,7 +46,7 @@ class EditingRollTest(FunctionalTest):
 
         # John likes Tony, so he sets him to be first in the ranking
         self.browser.find_element_by_id('edit_attendee_3').click()
-        orderbox = self.browser.find_element_by_id('id_order')
+        orderbox = self.browser.find_element_by_id('id_edit_order')
         orderbox.clear()
         orderbox.send_keys('1\n')
         expected_order = ['Tony Soprano', 'Daveed Diggs', 'Alexander Hamilton']
@@ -54,7 +54,7 @@ class EditingRollTest(FunctionalTest):
 
         # John hates Daveed, so he sends him to the end of the list
         self.browser.find_element_by_id('edit_attendee_2').click()
-        orderbox = self.browser.find_element_by_id('id_order')
+        orderbox = self.browser.find_element_by_id('id_edit_order')
         orderbox.clear()
         orderbox.send_keys('\n')
         expected_order = ['Tony Soprano', 'Alexander Hamilton', 'Daveed Diggs']
