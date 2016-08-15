@@ -167,12 +167,13 @@ class NewRollTest(TestCase):
 class EditRollTest(TestCase):
     def test_POST_saves_edit_to_database(self):
         roll = Roll.objects.create()
-        attendee = Attendee.objects.create(roll=roll, name='don juan')
+        attendee = Attendee.objects.create(roll=roll, name='don juan', order=1)
         self.client.post('/create_roll/%d/edit_%d/' % (roll.id, attendee.id),
-                         data={'name': 'don john'})
-        new_attendee = Attendee.objects.first()
-        self.assertEqual(attendee, new_attendee)
-        self.assertEqual(new_attendee.name, 'don john')
+                         data={'name': 'don john', 'order': 2})
+        edited_attendee = Attendee.objects.first()
+        self.assertEqual(attendee, edited_attendee)
+        self.assertEqual(edited_attendee.name, 'don john')
+        self.assertEqual(edited_attendee.order, '2')
 
     def test_redirects_to_view_roll_after_POST(self):
         roll = Roll.objects.create()
@@ -222,8 +223,9 @@ class EditRollTest(TestCase):
 
     def test_autopopulates_form_with_data(self):
         roll = Roll.objects.create()
-        Attendee.objects.create(roll=roll, name='Mister NoEdit')
-        correct_attendee = Attendee.objects.create(roll=roll, name='Mister Edit')
+        Attendee.objects.create(roll=roll, name='Mister NoEdit', order=2)
+        correct_attendee = Attendee.objects.create(roll=roll, name='Mister Edit', order=1)
         response = self.client.get('/create_roll/%d/edit_%d/' % (roll.id, correct_attendee.id))
         self.assertIsInstance(response.context['edit_attendee_form'], EditAttendeeForm)
         self.assertContains(response, 'Mister Edit')
+        self.assertContains(response, '1')
