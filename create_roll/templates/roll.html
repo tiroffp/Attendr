@@ -8,11 +8,13 @@
     <table id="id_roll_table" class="table">
         {% for attendee in attendees %}
             <tr>
-              <td><p>{{ forloop.counter }}:</p></td><td><p>{{ attendee.name}}</p></td>
+              <td><p>{{ forloop.counter }}:</p></td><td><p>{{ attendee.name }}</p></td>
               <td>
                 <form action="{% url 'edit_create_roll' roll.id attendee.id %}" method="GET">
                   {% csrf_token %}
-                  <input type="submit" class="btn btn-primary" id="edit_attendee_{{ attendee.id }}" value="Edit" />
+                  <div class="input_div">
+                    <input type="submit" class="btn btn-primary" id="edit_attendee_{{ attendee.id }}" value="Edit" />
+                  </div>
                 </form>
               </td>
             </tr>

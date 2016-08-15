@@ -7,15 +7,19 @@
         {% if attendee.id == edit_attendee_id %}
           <form method="POST" action="{% url 'edit_create_roll' roll.id edit_attendee_id %}">
             {% csrf_token %}
-            <td><p>{{ forloop.counter }}:</p></td>
             <td>
               <div class="input_div">
-                <input id="{{ edit_attendee_form.name.id }}" class="form-control" name="{{ edit_attendee_form.name.name }}" type="text" value="{{ edit_attendee_form.name.value}}"/>
+                <input id="id_edit_order" class="form-control" name="{{ edit_attendee_form.order.html_name }}" type="text" value="{{ edit_attendee_form.order.value}}"/>
               </div>
             </td>
             <td>
               <div class="input_div">
-                <input type="submit" class="btn btn-primary" id="edit_attendee_submit" value="Submit"/>
+                <input id="id_edit_name" class="form-control" name="{{ edit_attendee_form.name.html_name }}" type="text" value="{{ edit_attendee_form.name.value}}"/>
+              </div>
+            </td>
+            <td>
+              <div class="input_div">
+                <input type="submit" class="btn btn-primary" id="edit_attendee_submit" value="Save"/>
               </div>
             </td>
           </form>
