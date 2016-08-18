@@ -69,7 +69,7 @@ class EditAttendeeFormTest(TestCase):
                                 attendee_id=attendee.id)
         self.assertIn(attendee.name, form.as_p())
 
-    def test_form_validation_for_blank_attendees(self):
+    def test_form_validation_for_blank_attendee_names(self):
         roll = Roll.objects.create()
         attendee = Attendee.objects.create(roll=roll, name='John Madden')
         form = EditAttendeeForm(attendee_id=attendee.id,
@@ -78,7 +78,7 @@ class EditAttendeeFormTest(TestCase):
         self.assertEqual(form.errors['name'],
                          [EMPTY_ERROR_MESSAGE])
 
-    def test_form_validation_for_duplicate_attendees(self):
+    def test_form_validation_for_duplicate_attendee_names(self):
         roll = Roll.objects.create()
         Attendee.objects.create(roll=roll, name='no twins!')
         attendee = Attendee.objects.create(roll=roll, name='not a twin')
@@ -91,7 +91,8 @@ class EditAttendeeFormTest(TestCase):
         roll = Roll.objects.create()
         attendee = Attendee.objects.create(roll=roll, name='John Cene')
         form = EditAttendeeForm(attendee_id=attendee.id,
-                                data={'name': 'John Cena'})
+                                data={'name': 'John Cena', 'order': 1})
         new_attendee = form.save()
         self.assertEqual(new_attendee, Attendee.objects.all()[0])
         self.assertNotEqual(new_attendee.name, attendee.name)
+        self.assertNotEqual(new_attendee.order, attendee.order)

@@ -49,10 +49,13 @@ class EditAttendeeForm(forms.models.ModelForm):
 
     class Meta:
         model = Attendee
-        fields = ('name',)
+        fields = ('name', 'order')
         widgets = {
             'name': forms.fields.TextInput(attrs={
-                'class': 'form-control input-lg',
+                'class': 'form-inline',
+                }),
+            'order': forms.fields.TextInput(attrs={
+                'class': 'form-inline',
                 }),
         }
         error_messages = {

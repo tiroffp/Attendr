@@ -26,6 +26,9 @@ class EditingRollTest(FunctionalTest):
         self.get_attendee_input_box().send_keys('Alexander Hamilton\n')
         self.get_attendee_input_box().send_keys('Tony Tiger\n')
 
+        # He notes that the list sorts the members alphabetically, as they currently have no order
+        self.check_table_row_ordering(['Alexander Hamilton', 'Daveed Diggs', 'Tony Tiger'])
+
         # John remembers that Tony Soprano, not Tony Tiger agreed to come to his
         # meeting. He decides its easier to edit the Tiger's entry, rather than
         # create a new one
@@ -39,25 +42,30 @@ class EditingRollTest(FunctionalTest):
             self.assertFalse(True)
         except AssertionError:
             self.assertTrue(True)
-        # John sees that the three attendees currently have order numbers
-        # created based on their creation order
-        expected_order = ['Daveed Diggs', 'Alexander Hamilton', 'Tony Soprano']
-        self.check_table_row_ordering(expected_order)
-
+        # John assigns each a roll number based on how much he likes them. They automatically order
+        # on save
         # John likes Tony, so he sets him to be first in the ranking
         self.browser.find_element_by_id('edit_attendee_3').click()
         orderbox = self.browser.find_element_by_id('id_edit_order')
         orderbox.clear()
         orderbox.send_keys('1\n')
-        expected_order = ['Tony Soprano', 'Daveed Diggs', 'Alexander Hamilton']
+        expected_order = ['Tony Soprano', 'Alexander Hamilton', 'Daveed Diggs']
         self.check_table_row_ordering(expected_order)
 
-        # John hates Daveed, so he sends him to the end of the list
+        #The program prevents him from assigning a duplicate ordering number
+        self.browser.find_element_by_id('edit_attendee_1').click()
+        orderbox = self.browser.find_element_by_id('id_edit_order')
+        orderbox.clear()
+        orderbox.send_keys('1\n')
+        expected_order = ['Tony Soprano', 'Alexander Hamilton', 'Daveed Diggs']
+        self.check_table_row_ordering(expected_order)
+
+        # John hates Alex, so he sends him to the end of the list
         self.browser.find_element_by_id('edit_attendee_2').click()
         orderbox = self.browser.find_element_by_id('id_edit_order')
         orderbox.clear()
         orderbox.send_keys('\n')
-        expected_order = ['Tony Soprano', 'Alexander Hamilton', 'Daveed Diggs']
+        expected_order = ['Tony Soprano', 'Daveed Diggs', 'Alexander Hamilton']
         self.check_table_row_ordering(expected_order)
 
         # John logs out for now
@@ -70,3 +78,11 @@ class EditingRollTest(FunctionalTest):
         self.browser.get(john_rolls_url)
         expected_order = ['Tony Soprano', 'Alexander Hamilton', 'Daveed Diggs']
         self.check_table_row_ordering(expected_order)
+
+        # John wants to add more people to his roll, but he still hates Alex so he wants
+        # to make sure Alex stays at the end. He clicks "Give new attendees order numbers"
+        self.fail('Do I want to do this? If I plan on just making a seperate attendee creator, that will render this mostly useless')
+        # He then adds a new attendee
+
+        # The app assigns the attendee the next lowest available roll number, and shows the member
+        # below all others with numbers, but above those without

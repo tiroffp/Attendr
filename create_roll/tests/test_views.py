@@ -129,6 +129,18 @@ class RollViewTest(TestCase):
         self.assertEqual(first_attendee.name, 'Mister First')
         self.assertEqual(second_attendee.name, 'Mister Second')
 
+    def test_displays_by_order(self):
+        roll = Roll.objects.create()
+        Attendee.objects.create(roll=roll, name='Me Middle', order=2)
+        Attendee.objects.create(roll=roll, name='Me Last')
+        Attendee.objects.create(roll=roll, name='Me First', order=1)
+
+        response = self.client.get('/create_roll/%d/' % (roll.id,))
+        attendees = [a.name for a in response.context["attendees"]]
+        self.assertEqual('Me First', attendees[0])
+        self.assertEqual('Me Middle', attendees[1])
+        self.assertEqual('Me Last', attendees[2])
+
 
 class NewRollTest(TestCase):
     def test_saving_a_POST_request(self):
@@ -173,7 +185,7 @@ class EditRollTest(TestCase):
         edited_attendee = Attendee.objects.first()
         self.assertEqual(attendee, edited_attendee)
         self.assertEqual(edited_attendee.name, 'don john')
-        self.assertEqual(edited_attendee.order, '2')
+        self.assertEqual(edited_attendee.order, 2)
 
     def test_redirects_to_view_roll_after_POST(self):
         roll = Roll.objects.create()
@@ -229,3 +241,15 @@ class EditRollTest(TestCase):
         self.assertIsInstance(response.context['edit_attendee_form'], EditAttendeeForm)
         self.assertContains(response, 'Mister Edit')
         self.assertContains(response, '1')
+
+    def test_displays_by_order(self):
+        roll = Roll.objects.create()
+        Attendee.objects.create(roll=roll, name='Me Middle', order=2)
+        Attendee.objects.create(roll=roll, name='Me Last')
+        edit = Attendee.objects.create(roll=roll, name='Me First', order=1)
+
+        response = self.client.get('/create_roll/%d/edit_%d/' % (roll.id, edit.id))
+        attendees = [a.name for a in response.context["attendees"]]
+        self.assertEqual('Me First', attendees[0])
+        self.assertEqual('Me Middle', attendees[1])
+        self.assertEqual('Me Last', attendees[2])

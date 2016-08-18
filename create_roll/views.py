@@ -3,6 +3,7 @@ from create_roll.models import Roll, Attendee
 from create_roll.forms import (AttendeeForm,
                                ExistingRollAttendeeForm,
                                EditAttendeeForm)
+from django.db.models import Count
 
 
 def home_page(request):
@@ -17,7 +18,7 @@ def view_roll(request, roll_id):
         if form.is_valid():
             form.save()
             return redirect(roll)
-    attendees = roll.attendee_set.order_by('id')
+    attendees = roll.attendee_set.all().annotate(new_order=Count('order')).order_by('-new_order', 'order')
     return render(request,
                   'roll.html',
                   {'roll': roll, 'attendees': attendees, 'form': form})
@@ -42,12 +43,11 @@ def edit_roll(request, roll_id, attendee_id):
         if edit_form.is_valid():
             edit_form.save()
             return redirect(roll)
-    attendees = roll.attendee_set.order_by('id')
+    attendees = roll.attendee_set.all().annotate(new_order=Count('order')).order_by('-new_order', 'order')
     form = ExistingRollAttendeeForm(for_roll=roll)
     attendee_model = Attendee.objects.get(id=attendee_id)
     edit_data = {'name': attendee_model.name}
     edit_attendee_form = EditAttendeeForm(data=edit_data, attendee_id=attendee_id)
-    edit_attendee_form.name = 'Johnny'
     return render(request,
                   'edit_roll.html',
                   {'roll': roll,

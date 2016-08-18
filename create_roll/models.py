@@ -11,6 +11,7 @@ class Roll(models.Model):
 class Attendee(models.Model):
     name = models.TextField(default='')
     roll = models.ForeignKey(Roll, default=None)
+    order = models.IntegerField(null=True, blank=True, default=None)
 
     class Meta:
         unique_together = ('roll', 'name')
